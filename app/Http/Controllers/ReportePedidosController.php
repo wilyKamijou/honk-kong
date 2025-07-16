@@ -6,6 +6,15 @@ use App\Models\pedidos;
 use App\Models\User;
 use App\Models\productos;
 use App\Models\detalle_pedidos;
+use App\Models\envios;
+use App\Models\metodos_pagos;
+use App\Models\categorias;
+use App\Models\resenas;
+use App\Models\aplicaciones_promociones;
+use App\Models\promociones;
+use App\Models\aplicaciones_descuentos;
+use App\Models\descuentos;
+use App\Models\aplicaciones_envios;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -199,4 +208,179 @@ protected function prepararDatosTabla($pedidosPorFecha)
             'por_metodo_pago' => $pedidos->groupBy('id_pago')->map->sum('total')
         ];
     }
+
+
+// nuevos
+public function ventasPorCategoria(Request $request)
+{
+    $fechaInicio = $request->input('fecha_inicio', now()->subMonth());
+    $fechaFin = $request->input('fecha_fin', now());
+
+    // Datos para la tabla (categorías)
+    $ventas = categorias::select(
+            'categorias.id_categoria',
+            'categorias.nombre',
+            DB::raw('SUM(detalle_pedidos.cantidad) as total_unidades'),
+            DB::raw('SUM(detalle_pedidos.cantidad * detalle_pedidos.precio) as total_ventas')
+        )
+        ->join('productos', 'categorias.id_categoria', '=', 'productos.id_categoria')
+        ->join('detalle_pedidos', 'productos.id_producto', '=', 'detalle_pedidos.id_producto')
+        ->join('pedidos', 'detalle_pedidos.id_pedido', '=', 'pedidos.id_pedido')
+        ->whereBetween('pedidos.fecha', [$fechaInicio, $fechaFin])
+        ->groupBy('categorias.id_categoria', 'categorias.nombre')
+        ->orderByDesc('total_ventas')
+        ->get();
+
+    // Datos para el gráfico (top productos por categoría)
+    $productosMasVendidos = productos::select(
+            'productos.id_producto',
+            'productos.nombre as producto_nombre',
+            'categorias.nombre as categoria_nombre',
+            DB::raw('SUM(detalle_pedidos.cantidad) as total_vendido')
+        )
+        ->join('categorias', 'productos.id_categoria', '=', 'categorias.id_categoria')
+        ->join('detalle_pedidos', 'productos.id_producto', '=', 'detalle_pedidos.id_producto')
+        ->join('pedidos', 'detalle_pedidos.id_pedido', '=', 'pedidos.id_pedido')
+        ->whereBetween('pedidos.fecha', [$fechaInicio, $fechaFin])
+        ->groupBy('productos.id_producto', 'productos.nombre', 'categorias.nombre')
+        ->orderByDesc('total_vendido')
+        ->limit(10) // Top 10 productos
+        ->get();
+
+    return view('reportes.ventas_categoria', [
+        'ventas' => $ventas,
+        'productosMasVendidos' => $productosMasVendidos,
+        'fechaInicio' => $fechaInicio,
+        'fechaFin' => $fechaFin
+    ]);
+}
+public function ventasPorFecha(Request $request)
+{
+    // Filtros con valores por defecto (últimos 30 días)
+    $fechaInicio = $request->input('fecha_inicio', now()->subDays(30)->format('Y-m-d'));
+    $fechaFin = $request->input('fecha_fin', now()->format('Y-m-d'));
+    $agrupacion = $request->input('agrupacion', 'dia'); // día, semana o mes
+
+    // Consulta base
+    $query = pedidos::select(
+            DB::raw($this->getDateExpression($agrupacion, 'fecha') . ' as fecha_agrupada'),
+            DB::raw('COUNT(*) as total_pedidos'),
+            DB::raw('SUM(total) as total_ventas'),
+            DB::raw('SUM(
+                (SELECT SUM(cantidad) 
+                 FROM detalle_pedidos 
+                 WHERE detalle_pedidos.id_pedido = pedidos.id_pedido)
+            ) as total_productos')
+        )
+        ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+        ->groupBy('fecha_agrupada')
+        ->orderBy('fecha_agrupada');
+
+    $ventas = $query->get();
+
+    return view('reportes.ventas_fecha', [
+        'ventas' => $ventas,
+        'fechaInicio' => $fechaInicio,
+        'fechaFin' => $fechaFin,
+        'agrupacion' => $agrupacion
+    ]);
+}
+
+// Helper para expresiones SQL de fecha según agrupación
+private function getDateExpression($agrupacion, $column)
+{
+    switch ($agrupacion) {
+        case 'dia':
+            return "DATE_FORMAT($column, '%Y-%m-%d')";
+        case 'semana':
+            return "DATE_FORMAT($column, '%x-%v')"; // Año-numero semana
+        case 'mes':
+            return "DATE_FORMAT($column, '%Y-%m')";
+        default:
+            return "DATE($column)";
+    }
+}
+
+public function analisisTemporadas(Request $request)
+{
+    $year = $request->input('year', date('Y'));
+    $categoriaId = $request->input('categoria_id');
+
+    $datos = DB::table('pedidos')
+        ->selectRaw('
+            categorias.nombre as categoria,
+            MONTH(pedidos.fecha) as mes,
+            SUM(detalle_pedidos.cantidad) as unidades,
+            SUM(detalle_pedidos.cantidad * detalle_pedidos.precio) as venta_total
+        ')
+        ->join('detalle_pedidos', 'pedidos.id_pedido', '=', 'detalle_pedidos.id_pedido')
+        ->join('productos', 'detalle_pedidos.id_producto', '=', 'productos.id_producto')
+        ->join('categorias', 'productos.id_categoria', '=', 'categorias.id_categoria')
+        ->whereYear('pedidos.fecha', $year)
+        ->when($categoriaId, function($query, $categoriaId) {
+            return $query->where('categorias.id_categoria', $categoriaId);
+        })
+        ->groupBy('categorias.nombre', 'mes')
+        ->orderBy('mes')
+        ->get();
+
+    $categorias = categorias::all();
+    $heatmapData = $datos->groupBy('categoria');
+
+    return view('reportes.temporadas', [
+        'heatmapData' => $heatmapData,
+        'categorias' => $categorias,
+        'year' => $year,
+        'categoriaId' => $categoriaId
+    ]);
+}
+
+
+
+
+
+public function customerLifetimeValue(Request $request)
+{
+    $cohortes = User::selectRaw('
+        DATE_FORMAT(users.created_at, "%Y-%m") as cohorte,
+        COUNT(users.id) as total_clientes,
+        SUM(pedidos.total) as ventas_totales,
+        COUNT(pedidos.id_pedido) as total_pedidos,
+        AVG(pedidos.total) as ticket_promedio
+    ')
+    ->leftJoin('pedidos', function($join) {
+        $join->on('users.id', '=', 'pedidos.user_id')
+             ->where('pedidos.estado', 'entregado');
+    })
+    ->groupBy('cohorte')
+    ->orderBy('cohorte')
+    ->get();
+
+    // Calcular retención
+    $retention = [];
+    foreach ($cohortes as $cohort) {
+        $monthStart = Carbon::createFromFormat('Y-m', $cohort->cohorte);
+        $data = [
+            'cohorte' => $monthStart->format('M Y'),
+            'clientes' => $cohort->total_clientes
+        ];
+
+        for ($i = 1; $i <= 6; $i++) {
+            $month = $monthStart->copy()->addMonths($i);
+            $pedidos = Pedidos::where('user_id', 'users.id')
+                ->whereBetween('fecha', [$monthStart, $month])
+                ->count();
+
+            $data['m_' . $i] = $pedidos > 0 ? '✔' : '✘';
+        }
+
+        $retention[] = $data;
+    }
+
+    return view('reportes.clv', [
+        'cohortes' => $cohortes,
+        'retention' => $retention
+    ]);
+}
+
 }

@@ -20,7 +20,6 @@ use App\Http\Controllers\ReportePedidosController;
 
 
 
-
 //rutas publicas
 Route::get('/', [TiendaController::class, 'index'])->name('inicio');
 Route::get('/quienes', [TiendaController::class, 'mostrar'])->name('quienes');
@@ -181,9 +180,8 @@ Route::middleware([
         Route::post('/dtpedidos/generar-detalles', [DetallePedidosController::class, 'generarDetallesAutomaticos'])
             ->name('dtpedidos.generar');
 
-        Route::get('/appromociones/asignar-automaticas', [AplicacionesPromocionesController::class, 'asignarPromocionesAutomaticas'])
-            ->name('appromociones.asignar-automaticas');
-
+Route::get('/appromociones/asignar-automaticas', [AplicacionesPromocionesController::class, 'asignarPromocionesAutomaticas'])
+    ->name('appromociones.asignar-automaticas');
         Route::get('/adminPage', [ReportePedidosController::class, 'adminPage'])
             ->name('adminPage');
 
@@ -196,7 +194,13 @@ Route::middleware([
             ->name('reseñas.createByUser');
     Route::group(['prefix' => 'admin'], function() {
     Route::get('/dashboard', [ReportePedidosController::class, 'adminPage'])->name('admin.dashboard');
-    Route::get('/reportes', [ReportePedidosController::class, 'mostrarReportes'])->name('admin.reportes');
+ 
+    Route::get('/reportes/ventas-categoria', [ReportePedidosController::class, 'ventasPorCategoria'])->name('reportes.ventas-categoria');
+    Route::get('/reportes/ventas-fecha', [ReportePedidosController::class, 'ventasPorFecha'])->name('reportes.ventas-fecha');
+
+    Route::get('/reportes/temporadas', [ReportePedidosController::class, 'analisisTemporadas'])->name('reportes.temporadas');
+    Route::get('/reportes/clv', [ReportePedidosController::class, 'customerLifetimeValue'])->name('reportes.clv');
+
 });
         });
 

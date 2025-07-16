@@ -160,6 +160,9 @@ return [
     'layout_fixed_footer' => null,
     'layout_dark_mode' => null,
 
+    'use_favicon' => true,
+'favicon' => 'favicon.ico',
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Views Classes
@@ -329,12 +332,16 @@ return [
             'label' => 4,
             'label_color' => 'success',
         ],
-
+        [
+            'text' => 'Admin page',
+            'url' => '/admin/dashboard',
+            'icon' => 'far fa-fw fa-lock',
+            'label_color' => 'success',
+        ],
         [
             'text' => 'producto',
             'url' => '/producto',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
+            'icon' => 'fas fa-fw fa-barcode',
             'label_color' => 'success',
         ],
         //['header' => 'account_settings'],
@@ -346,52 +353,52 @@ return [
         [
             'text' => 'Categorias',
             'url' => '/categorias',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-tags',
         ],
         [
             'text' => 'Promociones',
             'url' => '/promociones',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-percentage',
         ],
         [
             'text' => 'Descuentos',
             'url' => '/descuentos',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-tags',
         ],
         [
             'text' => 'Reseñas',
             'url' => '/reseñas',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-star',
         ],
         [
             'text' => 'Envios',
             'url' => '/envios',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-star',
         ],
         [
             'text' => 'Pedidos',
             'url' => '/pedidos',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-truck',
         ],
         [
             'text' => 'Pagos',
             'url' => '/pagos',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-credit-card',
         ],
         [
             'text' => 'Detalle de pedidos',
             'url' => '/dtpedidos',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-list-alt',
         ],
         [
             'text' => 'Aplicacion de descuentos',
             'url' => '/apdescuentos',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-tags',
         ],
         [
             'text' => 'Aplicacion de promociones',
             'url' => '/appromociones',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon' => 'fas fa-fw fa-bullhorn',
         ],
     ],
 

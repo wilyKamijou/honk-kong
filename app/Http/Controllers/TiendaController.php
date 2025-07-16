@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\Categorias; // Se mantiene si Categorias es el nombre de la clase
+use App\Models\categorias; // Se mantiene si Categorias es el nombre de la clase
 use App\Models\productos; // Cambiado a singular y PascalCase
 use App\Models\AplicacionesPromociones; // Se mantiene si es el nombre de la clase y el archivo coincide
 use App\Models\Resena; // ¡IMPORTANTE! Cambiado a singular y PascalCase

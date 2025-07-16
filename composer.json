@@ -12,7 +12,10 @@
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
+<<<<<<< HEAD
         "laravel/ui": "^4.6",
+=======
+>>>>>>> ddb1aafbf0c1185b54e138dad69d268c83575e41
         "livewire/livewire": "^3.0"
     },
     "require-dev": {
@@ -61,14 +64,19 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
-        ]
+        ],
+        "start": "php artisan serve --host=0.0.0.0 --port=$PORT"
     },
+
     "extra": {
         "laravel": {
             "dont-discover": []
         }
     },
     "config": {
+        "platform": {
+            "php": "8.2.0"
+        },
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
