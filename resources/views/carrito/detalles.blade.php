@@ -218,7 +218,7 @@
             @endforeach
         </div>
     </div>
-    
+
     <div class="total-summary">
         <p>Total del pedido: <strong>${{ number_format($pedido->total, 2) }}</strong></p>
     </div>

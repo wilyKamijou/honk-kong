@@ -1,19 +1,13 @@
-<!-- resources/views/adminPage.blade.php -->
-@extends('layouts.app')
+@extends('home')
 
 @section('content')
+<div class="content-wrapper">
 <div class="container-fluid">
-    <!-- Encabezado -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Panel de Administración</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generar Reporte
-        </a>
-    </div>
-
+    <h1 class="h3 mb-4 text-gray-800">Panel de Administración</h1>
+    
     <!-- Tarjetas de Resumen -->
     <div class="row">
-        <!-- Total de Pedidos Hoy -->
+        <!-- Pedidos hoy -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
@@ -31,7 +25,7 @@
             </div>
         </div>
 
-        <!-- Ventas Hoy -->
+        <!-- Ventas hoy -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
@@ -49,14 +43,14 @@
             </div>
         </div>
 
-        <!-- Clientes Nuevos -->
+        <!-- Clientes nuevos -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Nuevos Clientes</div>
+                                Clientes Nuevos</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $clientesNuevos }}</div>
                         </div>
                         <div class="col-auto">
@@ -67,14 +61,14 @@
             </div>
         </div>
 
-        <!-- Total de Productos -->
+        <!-- Total productos -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Productos Registrados</div>
+                                Productos en Inventario</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProductos }}</div>
                         </div>
                         <div class="col-auto">
@@ -86,13 +80,13 @@
         </div>
     </div>
 
-    <!-- Gráficos y Tablas -->
+    <!-- Gráficos -->
     <div class="row">
-        <!-- Gráfico de Ventas Mensuales -->
+        <!-- Gráfico de ventas mensuales -->
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Resumen de Ventas Anuales</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Ventas Mensuales</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
@@ -102,45 +96,54 @@
             </div>
         </div>
 
-        <!-- Pedidos Recientes -->
+        <!-- Pedidos recientes -->
         <div class="col-xl-4 col-lg-5">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Pedidos Recientes</h6>
                 </div>
                 <div class="card-body">
-                    @foreach($pedidosRecientes as $pedido)
-                    <div class="mb-3 pb-2 border-bottom">
-                        <div class="d-flex justify-content-between">
-                            <strong>Pedido #{{ $pedido['pedido']->id }}</strong>
-                            <span class="text-primary">${{ number_format($pedido['pedido']->total, 2) }}</span>
-                        </div>
-                        @if($pedido['producto'])
-                        <div class="small mt-1">
-                            <span class="font-weight-bold">Producto:</span> {{ $pedido['producto']->nombre }}
-                            <span class="text-muted">(x{{ $pedido['detalle']->cantidad }})</span>
-                        </div>
-                        @endif
-                        <div class="small text-muted">
-                            {{ $pedido['pedido']->created_at->format('d/m/Y H:i') }}
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Producto</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($pedidosRecientes as $pedido)
+                                <tr>
+                                    <td>#{{ $pedido['pedido']->id }}</td>
+                                    <td>
+                                        @if($pedido['producto'])
+                                            {{ $pedido['producto']->nombre }}
+                                        @else
+                                            Sin productos
+                                        @endif
+                                    </td>
+                                    <td>${{ number_format($pedido['pedido']->total, 2) }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    @endforeach
-                    <a href="{{ route('reportes.pedidos') }}" class="btn btn-block btn-light mt-2">Ver reporte de pedidos</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
 
-@push('scripts')
+<!-- Scripts para gráficos -->
+@section('scripts')
+@parent
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Gráfico de Ventas Mensuales
+    // Gráfico de ventas mensuales
     document.addEventListener('DOMContentLoaded', function() {
-        var ctx = document.getElementById('ventasMensualesChart').getContext('2d');
-        var ventasMensualesChart = new Chart(ctx, {
+        const ctx = document.getElementById('ventasMensualesChart').getContext('2d');
+        const ventasMensualesChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
@@ -152,18 +155,16 @@
                     pointBackgroundColor: 'rgba(78, 115, 223, 1)',
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
-                    tension: 0.3
+                    pointHoverBorderColor: 'rgba(78, 115, 223, 1)'
                 }, {
                     label: 'Año Anterior',
                     data: @json($ventasMensualesAnterior),
-                    backgroundColor: 'rgba(28, 200, 138, 0.05)',
-                    borderColor: 'rgba(28, 200, 138, 1)',
-                    pointBackgroundColor: 'rgba(28, 200, 138, 1)',
+                    backgroundColor: 'rgba(200, 200, 200, 0.05)',
+                    borderColor: 'rgba(200, 200, 200, 1)',
+                    pointBackgroundColor: 'rgba(200, 200, 200, 1)',
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(28, 200, 138, 1)',
-                    tension: 0.3,
+                    pointHoverBorderColor: 'rgba(200, 200, 200, 1)',
                     borderDash: [5, 5]
                 }]
             },
@@ -179,12 +180,10 @@
                         }
                     }
                 },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.dataset.label + ': $' + context.raw.toLocaleString();
-                            }
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            return data.datasets[tooltipItem.datasetIndex].label + ': $' + tooltipItem.yLabel.toLocaleString();
                         }
                     }
                 }
@@ -192,4 +191,4 @@
         });
     });
 </script>
-@endpush
+@endsection

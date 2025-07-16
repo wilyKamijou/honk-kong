@@ -8,6 +8,7 @@ use App\Models\productos;
 use App\Models\detalle_pedidos;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportePedidosController extends Controller
 {
@@ -59,63 +60,130 @@ protected function getVentasMensualesAnterior()
     }
     return $ventas;
 }
-    public function mostrarReportes(Request $request)
-    {
-        // Obtener parámetros de fecha (si existen)
-        $fechaInicio = $request->input('fecha_inicio', Carbon::now()->subMonth()->format('Y-m-d'));
-        $fechaFin = $request->input('fecha_fin', Carbon::now()->format('Y-m-d'));
-        
-        // Consulta base
-        $query = pedidos::query();
-        
-        // Aplicar filtros de fecha si existen
-        $query->whereBetween('fecha', [
+public function mostrarReportes(Request $request)
+{
+    $fechaInicio = $request->input('fecha_inicio', Carbon::now()->subMonth()->format('Y-m-d'));
+    $fechaFin = $request->input('fecha_fin', Carbon::now()->format('Y-m-d'));
+    
+    // Verificar si es la carga inicial sin filtros
+    $esCargaInicial = !$request->has('fecha_inicio') && !$request->has('fecha_fin');
+    
+    // Obtener datos reales
+    $pedidos = Pedidos::with(['detalle_pedido.productos'])
+        ->whereBetween('created_at', [
             Carbon::parse($fechaInicio)->startOfDay(),
             Carbon::parse($fechaFin)->endOfDay()
-        ]);
-        
-   $pedidos = $query->with(['detalles.producto'])->get();
-        
-        // Generar reportes
-        $pedidosPorFecha = $this->generarReportePedidosPorFecha($pedidos);
-        $ventasPorPeriodo = $this->generarReporteVentas($pedidos);
-        
-        // Preparar datos para la vista
-        $datosReporte = [
-            'fechaInicio' => $fechaInicio,
-            'fechaFin' => $fechaFin,
-            'totalGeneral' => $pedidos->sum('total'),
-            'pedidosPorFecha' => $pedidosPorFecha,
-            'ventasPorPeriodo' => $ventasPorPeriodo,
-            'tableData' => $this->prepararDatosTabla($pedidosPorFecha)
-        ];
-        
-        return view('reportes.pedidos', compact('datosReporte'));
+        ])
+        ->get();
+    
+    // Procesar datos para los gráficos
+    $pedidosPorFecha = $this->generarReportePedidosPorFecha($pedidos);
+    $productosMasVendidos = $this->obtenerProductosMasVendidos($fechaInicio, $fechaFin);
+    
+    // Si es carga inicial y no hay datos, mostrar datos de muestra
+    if ($esCargaInicial && ($pedidosPorFecha->isEmpty() || $productosMasVendidos->isEmpty())) {
+        return $this->mostrarDatosDeMuestra($fechaInicio, $fechaFin);
     }
     
-    protected function generarReportePedidosPorFecha($pedidos)
-    {
-        return $pedidos->groupBy(function($pedido) {
-            return Carbon::parse($pedido->fecha)->format('Y-m-d');
-        })->map(function($grupo) {
-            return [
-                'fecha' => $grupo->first()->fecha,
-                'total_pedidos' => $grupo->count(),
-                'total_ventas' => $grupo->sum('total')
-            ];
-        })->values(); // Usar values() para resetear keys y que se convierta a array correctamente
-    }
+    $datosReporte = [
+        'fechaInicio' => $fechaInicio,
+        'fechaFin' => $fechaFin,
+        'totalGeneral' => $pedidos->sum('total') ?? 0,
+        'pedidosPorFecha' => $pedidosPorFecha,
+        'productosMasVendidos' => $productosMasVendidos,
+        'tableData' => $this->prepararDatosTabla($pedidosPorFecha),
+        'esDemo' => false // Indicador de datos reales
+    ];
     
-    protected function prepararDatosTabla($pedidosPorFecha)
-    {
-        return $pedidosPorFecha->map(function($item) {
+    return view('reportes.pedidos', compact('datosReporte'));
+}
+
+protected function obtenerProductosMasVendidos($fechaInicio, $fechaFin)
+{
+    return detalle_pedidos::with('productos')
+        ->select(
+            'id_producto',
+            DB::raw('SUM(cantidad) as total_vendido')
+        )
+        ->whereHas('pedidos', function($query) use ($fechaInicio, $fechaFin) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($fechaInicio)->startOfDay(),
+                Carbon::parse($fechaFin)->endOfDay()
+            ]);
+        })
+        ->groupBy('id_producto')
+        ->orderByDesc('total_vendido')
+        ->limit(10)
+        ->get()
+        ->map(function($item) {
             return [
-                'fecha' => $item['fecha'],
-                'pedidos' => $item['total_pedidos'],
-                'ventas' => '$' . number_format($item['total_ventas'], 2)
+                'nombre' => optional($item->productos)->nombre ?? 'Producto Desconocido',
+                'total_vendido' => $item->total_vendido ?? 0
             ];
         });
+}
+
+protected function generarReportePedidosPorFecha($pedidos)
+{
+    return $pedidos->groupBy(function($pedido) {
+        return Carbon::parse($pedido->fecha)->format('Y-m-d');
+    })->map(function($grupo) {
+        return [
+            'fecha' => $grupo->first()->fecha,
+            'total_pedidos' => $grupo->count(),
+            'total_ventas' => $grupo->sum('total')
+        ];
+    })->values();
+}
+
+protected function mostrarDatosDeMuestra($fechaInicio, $fechaFin)
+{
+    // Generar 30 días de datos de muestra para el gráfico de ventas
+    $pedidosPorFecha = collect();
+    $dias = Carbon::parse($fechaInicio)->diffInDays($fechaFin);
+    
+    for ($i = 0; $i <= $dias; $i++) {
+        $fecha = Carbon::parse($fechaInicio)->addDays($i)->format('Y-m-d');
+        $pedidosPorFecha->push([
+            'fecha' => $fecha,
+            'total_pedidos' => rand(1, 10),
+            'total_ventas' => rand(500, 5000)
+        ]);
     }
+    
+    // Datos de muestra para productos más vendidos
+    $productosMasVendidos = collect([
+        ['nombre' => 'Producto A', 'total_vendido' => 45],
+        ['nombre' => 'Producto B', 'total_vendido' => 32],
+        ['nombre' => 'Producto C', 'total_vendido' => 28],
+        ['nombre' => 'Producto D', 'total_vendido' => 15],
+        ['nombre' => 'Producto E', 'total_vendido' => 10]
+    ]);
+    
+    $datosReporte = [
+        'fechaInicio' => $fechaInicio,
+        'fechaFin' => $fechaFin,
+        'totalGeneral' => $pedidosPorFecha->sum('total_ventas'),
+        'pedidosPorFecha' => $pedidosPorFecha,
+        'productosMasVendidos' => $productosMasVendidos,
+        'tableData' => $this->prepararDatosTabla($pedidosPorFecha),
+        'esDemo' => true // Indicador de datos de muestra
+    ];
+    
+    return view('admin.reportes', compact('datosReporte'));
+}
+
+
+protected function prepararDatosTabla($pedidosPorFecha)
+{
+    return $pedidosPorFecha->map(function($item) {
+        return [
+            'fecha' => $item['fecha'],
+            'pedidos' => $item['total_pedidos'],
+            'ventas' => '$' . number_format($item['total_ventas'], 2)
+        ];
+    });
+}
     
     protected function generarReporteVentas($pedidos)
     {

@@ -18,6 +18,12 @@ use App\Http\Controllers\DetallePedidosController;
 use App\Models\aplicaciones_descuentos;
 use App\Http\Controllers\ReportePedidosController;
 
+
+Route::group(['prefix' => 'admin'], function() {
+    Route::get('/dashboard', [ReportePedidosController::class, 'adminPage'])->name('admin.dashboard');
+    Route::get('/reportes', [ReportePedidosController::class, 'mostrarReportes'])->name('admin.reportes');
+});
+
 //rutas publicas
 Route::get('/', [TiendaController::class, 'index'])->name('inicio');
 Route::get('/quienes', [TiendaController::class, 'mostrar'])->name('quienes');
