@@ -19,10 +19,7 @@ use App\Models\aplicaciones_descuentos;
 use App\Http\Controllers\ReportePedidosController;
 
 
-Route::group(['prefix' => 'admin'], function() {
-    Route::get('/dashboard', [ReportePedidosController::class, 'adminPage'])->name('admin.dashboard');
-    Route::get('/reportes', [ReportePedidosController::class, 'mostrarReportes'])->name('admin.reportes');
-});
+
 
 //rutas publicas
 Route::get('/', [TiendaController::class, 'index'])->name('inicio');
@@ -83,93 +80,93 @@ Route::middleware([
 
     Route::middleware(['auth', 'can:admin-only'])->group(function () {
 
-        Route::get('/producto', [ProductosController::class, 'index'])->name('home');
-        route::get('/producto/crear', [ProductosController::class, 'create'])->name('home');
-        route::post('/producto/guardar',[ProductosController::class, 'store'])->name('home');
-        route::get('/producto/{id}/editar',[ProductosController::class, 'edit'])->name('home');
-        route::Put('/producto/{id}/actualizar', [ProductosController::class, 'update'])->name('home');
-        route::delete('/producto/{id}/eliminar', [ProductosController::class, 'destroy'])->name('home');
+        Route::get('/producto', [ProductosController::class, 'index'])->name('producto.index');
+        route::get('/producto/crear', [ProductosController::class, 'create'])->name('producto.create');
+        route::post('/producto/guardar',[ProductosController::class, 'store'])->name('producto.store');
+        route::get('/producto/{id}/editar',[ProductosController::class, 'edit'])->name('producto.edit');
+        route::Put('/producto/{id}/actualizar', [ProductosController::class, 'update'])->name('producto.update');
+        route::delete('/producto/{id}/eliminar', [ProductosController::class, 'destroy'])->name('producto.destroy');
 
 
         //users
-        route::get('/user', [UsersController::class, 'index'])->name('home'); 
-        route::get('/user/crear', [UsersController::class, 'create'])->name('home');
-        route::post('/user/guardar',[UsersController::class, 'store'])->name('home');
-        route::get('/user/{id}/editar',[UsersController::class, 'edit'])->name('home');
-        route::Put('/user/{id}/actualizar', [UsersController::class, 'update'])->name('home');
-        route::delete('/user/{id}/eliminar', [UsersController::class, 'destroy'])->name('home');
+        route::get('/user', [UsersController::class, 'index'])->name('user.index'); 
+        route::get('/user/crear', [UsersController::class, 'create'])->name('user.create');
+        route::post('/user/guardar',[UsersController::class, 'store'])->name('user.store');
+        route::get('/user/{id}/editar',[UsersController::class, 'edit'])->name('user.edit');
+        route::Put('/user/{id}/actualizar', [UsersController::class, 'update'])->name('user.update');
+        route::delete('/user/{id}/eliminar', [UsersController::class, 'destroy'])->name('user.destroy');
 
         // web.php
         Route::post('/user/{id}/cambiar-rol', [UsersController::class, 'cambiarRol'])->name('user.cambiarRol');
 
         //categorias
-        route::get('/categorias', [categoriasController::class, 'index'])->name('home'); 
-        route::get('/categorias/crear', [categoriasController::class, 'create'])->name('home');
-        route::post('/categorias/guardar',[categoriasController::class, 'store'])->name('home');
-        route::get('/categorias/{id}/editar',[categoriasController::class, 'edit'])->name('home');
-        route::Put('/categorias/{id}/actualizar', [categoriasController::class, 'update'])->name('home');
-        route::delete('/categorias/{id}/eliminar', [categoriasController::class, 'destroy'])->name('home');
+        route::get('/categorias', [categoriasController::class, 'index'])->name('categorias.index'); 
+        route::get('/categorias/crear', [categoriasController::class, 'create'])->name('categorias.create');
+        route::post('/categorias/guardar',[categoriasController::class, 'store'])->name('categorias.store');
+        route::get('/categorias/{id}/editar',[categoriasController::class, 'edit'])->name('categorias.edit');
+        route::Put('/categorias/{id}/actualizar', [categoriasController::class, 'update'])->name('categorias.update');
+        route::delete('/categorias/{id}/eliminar', [categoriasController::class, 'destroy'])->name('categorias.destroy');
         //promociones
-        route::get('promociones', [promocionesController::class, 'index'])->name('home'); 
-        route::get('/promociones/crear', [promocionesController::class, 'create'])->name('home');
-        route::post('promociones/guardar',[promocionesController::class, 'store'])->name('home');
-        route::get('promociones/{id}/editar',[promocionesController::class, 'edit'])->name('home');
-        route::Put('promociones/{id}/actualizar', [promocionesController::class, 'update'])->name('home');
-        route::delete('promociones/{id}/eliminar', [promocionesController::class, 'destroy'])->name('home');
+        route::get('promociones', [promocionesController::class, 'index'])->name('promociones.index'); 
+        route::get('/promociones/crear', [promocionesController::class, 'create'])->name('promociones.create');
+        route::post('promociones/guardar',[promocionesController::class, 'store'])->name('promociones.store');
+        route::get('promociones/{id}/editar',[promocionesController::class, 'edit'])->name('promociones.edit');
+        route::Put('promociones/{id}/actualizar', [promocionesController::class, 'update'])->name('promociones.update');
+        route::delete('promociones/{id}/eliminar', [promocionesController::class, 'destroy'])->name('promociones.destroy');
         //descuentos
-        route::get('/descuentos', [descuentosController::class, 'index'])->name('home'); 
-        route::get('/descuentos/crear', [descuentosController::class, 'create'])->name('home');
-        route::post('/descuentos/guardar',[descuentosController::class, 'store'])->name('home');
-        route::get('/descuentos/{id}/editar',[descuentosController::class, 'edit'])->name('home');
-        route::Put('/descuentos/{id}/actualizar', [descuentosController::class, 'update'])->name('home');
-        route::delete('/descuentos/{id}/eliminar', [descuentosController::class, 'destroy'])->name('home');
+        route::get('/descuentos', [descuentosController::class, 'index'])->name('resenas.index'); 
+        route::get('/descuentos/crear', [descuentosController::class, 'create'])->name('resenas.create');
+        route::post('/descuentos/guardar',[descuentosController::class, 'store'])->name('resenas.store');
+        route::get('/descuentos/{id}/editar',[descuentosController::class, 'edit'])->name('resenas.edit');
+        route::Put('/descuentos/{id}/actualizar', [descuentosController::class, 'update'])->name('resenas.update');
+        route::delete('/descuentos/{id}/eliminar', [descuentosController::class, 'destroy'])->name('resenas.destroy');
         //reseñas
-        route::get('/reseñas', [resenasController::class, 'index'])->name('home'); 
-        route::get('/reseñas/crear', [resenasController::class, 'create'])->name('home');
-        route::post('/reseñas/guardar',[resenasController::class, 'store'])->name('home');
-        route::get('/reseñas/{id}/editar',[resenasController::class, 'edit'])->name('home');
-        route::Put('/reseñas/{id}/actualizar', [resenasController::class, 'update'])->name('home');
-        route::delete('/reseñas/{id}/eliminar', [resenasController::class, 'destroy'])->name('home');
+        route::get('/reseñas', [resenasController::class, 'index'])->name('resenas.index'); 
+        route::get('/reseñas/crear', [resenasController::class, 'create'])->name('resenas.create');
+        route::post('/reseñas/guardar',[resenasController::class, 'store'])->name('resenas.store');
+        route::get('/reseñas/{id}/editar',[resenasController::class, 'edit'])->name('reseñas.edit');
+        route::Put('/reseñas/{id}/actualizar', [resenasController::class, 'update'])->name('reseñas.update');
+        route::delete('/reseñas/{id}/eliminar', [resenasController::class, 'destroy'])->name('reseñas.destroy');
         //metodos de pago
-        route::get('/pagos', [metodosPagosController::class, 'index'])->name('home'); 
-        route::get('/pagos/crear', [metodosPagosController::class, 'create'])->name('home');
-        route::post('/pagos/guardar',[metodosPagosController::class, 'store'])->name('home');
-        route::get('/pagos/{id}/editar',[metodosPagosController::class, 'edit'])->name('home');
-        route::Put('/pagos/{id}/actualizar', [metodosPagosController::class, 'update'])->name('home');
-        route::delete('/pagos/{id}/eliminar', [metodosPagosController::class, 'destroy'])->name('home');
+        route::get('/pagos', [metodosPagosController::class, 'index'])->name('pagos.index'); 
+        route::get('/pagos/crear', [metodosPagosController::class, 'create'])->name('pagos.create');
+        route::post('/pagos/guardar',[metodosPagosController::class, 'store'])->name('pagos.store');
+        route::get('/pagos/{id}/editar',[metodosPagosController::class, 'edit'])->name('pagos.edit');
+        route::Put('/pagos/{id}/actualizar', [metodosPagosController::class, 'update'])->name('pagos.update');
+        route::delete('/pagos/{id}/eliminar', [metodosPagosController::class, 'destroy'])->name('pagos.destroy');
         //pedidos
-        route::get('/pedidos', [pedidosController::class, 'index'])->name('home'); 
-        route::get('/pedidos/crear', [pedidosController::class, 'create'])->name('home');
-        route::post('/pedidos/guardar',[pedidosController::class, 'store'])->name('home');
-        route::get('/pedidos/{id}/editar',[pedidosController::class, 'edit'])->name('home');
-        route::Put('/pedidos/{id}/actualizar', [pedidosController::class, 'update'])->name('home');
-        route::delete('/pedidos/{id}/eliminar', [pedidosController::class, 'destroy'])->name('home');
+        route::get('/pedidos', [pedidosController::class, 'index'])->name('pedidos.index'); 
+        route::get('/pedidos/crear', [pedidosController::class, 'create'])->name('pedidos.create');
+        route::post('/pedidos/guardar',[pedidosController::class, 'store'])->name('pedidos.store');
+        route::get('/pedidos/{id}/editar',[pedidosController::class, 'edit'])->name('pedidos.edit');
+        route::Put('/pedidos/{id}/actualizar', [pedidosController::class, 'update'])->name('pedidos.update');
+        route::delete('/pedidos/{id}/eliminar', [pedidosController::class, 'destroy'])->name('pedidos.destroy');
         //envios
-        route::get('/envios', [enviosController::class, 'index'])->name('home'); 
-        route::get('/envios/crear', [enviosController::class, 'create'])->name('home');
-        route::post('/envios/guardar',[enviosController::class, 'store'])->name('home');
-        route::get('/envios/{id}/editar',[enviosController::class, 'edit'])->name('home');
-        route::Put('/envios/{id}/actualizar', [enviosController::class, 'update'])->name('home');
-        route::delete('/envios/{id}/eliminar', [enviosController::class, 'destroy'])->name('home');
+        route::get('/envios', [enviosController::class, 'index'])->name('envios.index'); 
+        route::get('/envios/crear', [enviosController::class, 'create'])->name('envios.create');
+        route::post('/envios/guardar',[enviosController::class, 'store'])->name('envios.store');
+        route::get('/envios/{id}/editar',[enviosController::class, 'edit'])->name('envios.edit');
+        route::Put('/envios/{id}/actualizar', [enviosController::class, 'update'])->name('envios.update');
+        route::delete('/envios/{id}/eliminar', [enviosController::class, 'destroy'])->name('envios.destroy');
         //aplicaiones de promociones
-        route::get('/appromociones', [aplicacionespromocionesController::class, 'index'])->name('home'); 
-        route::get('/appromociones/crear', [aplicacionespromocionesController::class, 'create'])->name('home');
-        route::post('/appromociones/guardar',[aplicacionespromocionesController::class, 'store'])->name('home');
-        route::get('/appromociones/{id1}/{id2}/editar',[aplicacionespromocionesController::class, 'edit'])->name('home');
-        route::Put('/appromociones/{id1}/{id2}/actualizar', [aplicacionespromocionesController::class, 'update'])->name('home');
-        route::delete('/appromociones/{id1}/{id2}/eliminar', [aplicacionespromocionesController::class, 'destroy'])->name('home');
+        route::get('/appromociones', [aplicacionespromocionesController::class, 'index'])->name('appromociones.index'); 
+        route::get('/appromociones/crear', [aplicacionespromocionesController::class, 'create'])->name('appromociones.create');
+        route::post('/appromociones/guardar',[aplicacionespromocionesController::class, 'store'])->name('appromociones.store');
+        route::get('/appromociones/{id1}/{id2}/editar',[aplicacionespromocionesController::class, 'edit'])->name('appromociones.edit');
+        route::Put('/appromociones/{id1}/{id2}/actualizar', [aplicacionespromocionesController::class, 'update'])->name('appromociones.update');
+        route::delete('/appromociones/{id1}/{id2}/eliminar', [aplicacionespromocionesController::class, 'destroy'])->name('appromociones.destroy');
         //detalle de pedidos
-        route::get('/dtpedidos', [DetallePedidosController::class, 'index'])->name('home'); 
-        route::get('/dtpedidos/crear', [DetallePedidosController::class, 'create'])->name('home');
-        route::post('/dtpedidos/guardar',[DetallePedidosController::class, 'store'])->name('home');
-        route::get('/dtpedidos/{id1}/{id2}/editar',[DetallePedidosController::class, 'edit'])->name('home');
-        route::Put('/dtpedidos/{id1}/{id2}/actualizar', [DetallePedidosController::class, 'update'])->name('home');
-        route::delete('/dtpedidos/{id1}/{id2}/eliminar', [DetallePedidosController::class, 'destroy'])->name('home');
+        route::get('/dtpedidos', [DetallePedidosController::class, 'index'])->name('detallepedidos.index'); 
+        route::get('/dtpedidos/crear', [DetallePedidosController::class, 'create'])->name('detallepedidos.create');
+        route::post('/dtpedidos/guardar',[DetallePedidosController::class, 'store'])->name('detallepedidos.store');
+        route::get('/dtpedidos/{id1}/{id2}/editar',[DetallePedidosController::class, 'edit'])->name('detallepedidos.edit');
+        route::Put('/dtpedidos/{id1}/{id2}/actualizar', [DetallePedidosController::class, 'update'])->name('detallepedidos.update');
+        route::delete('/dtpedidos/{id1}/{id2}/eliminar', [DetallePedidosController::class, 'destroy'])->name('detallepedidos.destroy');
         
         //applicacion de descuentos
-        route::get('/apdescuentos', [AplicacionesDescuentosController::class, 'index'])->name('home'); 
-        route::get('/apdescuentos/crear', [AplicacionesDescuentosController::class, 'create'])->name('home');
-        route::post('/apdescuentos/guardar',[AplicacionesDescuentosController::class, 'store'])->name('home');
+        route::get('/apdescuentos', [AplicacionesDescuentosController::class, 'index'])->name('appdescuentos.index'); 
+        route::get('/apdescuentos/crear', [AplicacionesDescuentosController::class, 'create'])->name('appdescuentos.create');
+        route::post('/apdescuentos/guardar',[AplicacionesDescuentosController::class, 'store'])->name('appdescuentos.store');
         route::get('/apdescuentos/{id1}/{id2}/editar',[AplicacionesDescuentosController::class, 'edit'])->name('appdescuentos.edit');
         route::Put('/apdescuentos/{id1}/{id2}/actualizar', [AplicacionesDescuentosController::class, 'update'])->name('appdescuentos.update');
         route::delete('/apdescuentos/{id1}/{id2}/eliminar', [AplicacionesDescuentosController::class, 'destroy'])->name('appdescuentos.destroy');
@@ -197,6 +194,10 @@ Route::middleware([
         
         Route::get('/reseñas/create/{producto}', [ResenasController::class, 'createByUser'])
             ->name('reseñas.createByUser');
-    });
+    Route::group(['prefix' => 'admin'], function() {
+    Route::get('/dashboard', [ReportePedidosController::class, 'adminPage'])->name('admin.dashboard');
+    Route::get('/reportes', [ReportePedidosController::class, 'mostrarReportes'])->name('admin.reportes');
+});
+        });
 
 });
