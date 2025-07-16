@@ -78,7 +78,7 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="/reseñas/{{ $reseña->id_reseña }}/editar" 
+                                            <a href="{{route('reseñas.edit', $reseña->id_reseña)}}" 
                                                class="btn btn-outline-primary rounded-start"
                                                data-bs-toggle="tooltip"
                                                title="Editar reseña">

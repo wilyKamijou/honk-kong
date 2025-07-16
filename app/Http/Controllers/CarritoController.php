@@ -143,7 +143,7 @@ public function procesarPago(Request $request)
     // Crear envío
     envios::create([
         'direccion_envio' => $request->direccion_envio,
-        'fecha_envio' => $request->metodo_pago === 'efectivo' ? null : now(),
+        'fecha_envio' => $request->metodo_pago === 'efectivo' ? now() : now(),
         'fecha_estimada_llegada' => $request->metodo_pago === 'efectivo' ? null : now()->addDays(3),
         'metodo_envio' => 'Estándar',
         'estado_envio' => $request->metodo_pago === 'efectivo' ? 'Pendiente' : 'Procesado',

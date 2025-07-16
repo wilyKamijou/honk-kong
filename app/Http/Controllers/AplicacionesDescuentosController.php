@@ -76,7 +76,7 @@ public function asignarDescuentosAutomaticos()
         $apdes=DB::table('aplicaciones_descuentos as apdes')
             ->join('pedidos as p', 'apdes.id_pedido', '=', 'p.id_pedido')
             ->join('descuentos as d', 'apdes.id_descuento', '=', 'd.id_descuento')
-            ->join('Users as u', 'u.id', '=', 'p.user_id')
+            ->join('users as u', 'u.id', '=', 'p.user_id')
             ->select(
                 'apdes.id_descuento',
                 'apdes.id_pedido',

@@ -46,12 +46,12 @@ public function createByUser($productoId)
     Resena::create([
         'comentario' => $request->comentario,
         'calificacion' => $request->calificacion,
-        'fecha' => now(),
+        
         'user_id' => auth()->id(),
         'producto_id' => $request->producto_id,
     ]);
 
-    return redirect()->route('/inicio')->with('success', '¡Gracias por tu reseña!');
+    return redirect()->route('inicio')->with('success', '¡Gracias por tu reseña!');
 }
 
     public function index()
