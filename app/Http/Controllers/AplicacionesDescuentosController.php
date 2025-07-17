@@ -21,28 +21,26 @@ class AplicacionesDescuentosController extends Controller
  */
 public function asignarDescuentosAutomaticos()
 {
-        $maxDescuentosPorPedido = 1; // Cambia este número según necesites
+    $maxDescuentosPorPedido = 1;
     
+    // Obtener todos los descuentos disponibles una sola vez
     $descuentos = descuentos::all();
     
     if ($descuentos->isEmpty()) {
         return redirect('/apdescuentos')->with('error', 'No hay descuentos disponibles para asignar');
     }
     
-    // Obtener pedidos con menos del máximo de descuentos permitidos
-    $pedidos = pedidos::whereHas('aplicaciones_descuentos', function($query) use ($maxDescuentosPorPedido) {
-        $query->groupBy('id_pedido')
+    // Consulta corregida para obtener pedidos
+    $pedidos = pedidos::where(function($query) use ($maxDescuentosPorPedido) {
+        // Pedidos con menos descuentos de los permitidos
+        $query->whereHas('aplicaciones_descuentos', function($q) use ($maxDescuentosPorPedido) {
+            $q->select('id_pedido')
+              ->groupBy('id_pedido')
               ->havingRaw('COUNT(*) < ?', [$maxDescuentosPorPedido]);
-    }, '<', 1)->orWhereDoesntHave('aplicaciones_descuentos')->get();
-    // Obtener todos los descuentos disponibles
-    $descuentos = descuentos::all();
-    
-    if ($descuentos->isEmpty()) {
-        return redirect('/apdescuentos')->with('error', 'No hay descuentos disponibles para asignar');
-    }
-    
-    // Obtener pedidos sin descuentos aplicados
-    $pedidos = pedidos::whereDoesntHave('aplicaciones_descuentos')->get();
+        })
+        // O pedidos sin ningún descuento
+        ->orWhereDoesntHave('aplicaciones_descuentos');
+    })->get();
     
     if ($pedidos->isEmpty()) {
         return redirect('/apdescuentos')->with('info', 'Todos los pedidos ya tienen descuentos aplicados');
@@ -51,20 +49,15 @@ public function asignarDescuentosAutomaticos()
     $descuentosAsignados = 0;
     
     foreach ($pedidos as $pedido) {
-        // Seleccionar un descuento aleatorio
         $descuento = $descuentos->random();
         
         try {
-            // Aplicar el descuento al pedido
             aplicaciones_descuentos::create([
                 'id_pedido' => $pedido->id_pedido,
                 'id_descuento' => $descuento->id_descuento
             ]);
-            
             $descuentosAsignados++;
-            
         } catch (QueryException $e) {
-            // Si hay un error (como duplicado), continuar con el siguiente pedido
             continue;
         }
     }
