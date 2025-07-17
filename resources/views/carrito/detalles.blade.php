@@ -143,6 +143,24 @@
             margin-top: 20px;
             text-align: center;
         }
+        .btn-custom {
+    background: #e74c3c;
+    border: 2px solid #e74c3c;
+    color: white !important;
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none !important;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background: #c0392b;
+    border-color: #c0392b;
+    color: white;
+    text-decoration: none;
+}
     </style>
 @endpush
 
@@ -222,9 +240,8 @@
     <div class="total-summary">
         <p>Total del pedido: <strong>${{ number_format($pedido->total, 2) }}</strong></p>
     </div>
-    
-    <div class="action-buttons">
-        <a href="/" class="btn btn-primary">Volver al inicio</a>c
-    </div>
+<div class="action-buttons">
+    <a href="/" class="btn-custom">Volver al inicio</a>
+</div>
 </div>
 @endsection

@@ -14,13 +14,30 @@ class PedidosController extends Controller
      * Display a listing of the resource.
      */
       
-    public function index()
-    {
-        $pagos=metodos_pagos::all();
-        $pedidos=pedidos::all();
-        $clientes=user::all();
-        return view('pedido.index',compact('pagos','pedidos','clientes'));
+public function index()
+{
+    $pedidos = pedidos::with(['users', 'metodos_pagos'])->get();
+    $clientes = user::all();
+    $pagos = metodos_pagos::all();
+    
+    return view('pedido.index', compact('pagos', 'pedidos', 'clientes'));
+}
+
+public function update(Request $request, $id)
+{
+    $pedido = pedidos::findOrFail($id);
+    
+    // Si solo se está actualizando el estado
+    if ($request->has('estado')) {
+        $pedido->estado = $request->estado;
+        $pedido->save();
+        return back()->with('success', 'Estado del pedido actualizado correctamente');
     }
+    
+    // Actualización normal
+    $pedido->update($request->all());
+    return redirect('/pedidos')->with('success', 'Pedido actualizado correctamente');
+}
 
       public function generateFakePedidos()
     {
@@ -105,12 +122,6 @@ class PedidosController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
-    {
-        $pedido=pedidos::findorfail($id);
-        $pedido->update($request->all());
-        return redirect('/pedidos');
-    }
 
     /**
      * Remove the specified resource from storage.

@@ -34,7 +34,7 @@
     <nav class="nav-links">
         <a href="/">Home</a>
         <a href="/quienes">Quiénes somos</a>
-        <a href="/contactanos">Contáctanos</a>
+        <a href="/mis-pedidos">Mis pedidos</a>
         <div class="nav-actions">
 
             @auth

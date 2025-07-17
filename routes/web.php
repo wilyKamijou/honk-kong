@@ -34,36 +34,40 @@ route::Put('/perfil/{id}/actualizar', [TiendaController::class, 'actualizarPerfi
 
 
 Route::middleware(['auth'])->group(function () {
-
+              Route::get('/reseñas/create/{producto}', [ResenasController::class, 'createByUser'])
+            ->name('reseñas.createByUser');
+            Route::post('/reseñas', [ResenasController::class, 'storeByUser'])->name('reseñas.storeByUser');
     //funciones del carrito publicas
     Route::get('/carrito/agregar/{id}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
     Route::get('/carrito/ver', [CarritoController::class, 'ver'])->name('carrito.vercarrito');
     Route::post('/carrito/eliminar', [CarritoController::class, 'eliminar'])->name('carrito.eliminar');
     Route::get('/carrito/pago', [CarritoController::class, 'pago'])->name('carrito.pago');
     Route::post('/carrito/procesar', [CarritoController::class, 'procesarPago'])->name('carrito.procesar');
-
+    Route::get('/mis-pedidos', [CarritoController::class, 'misPedidos'])->name('carrito.mis-pedidos');
 // Nueva ruta para mostrar la confirmación
 Route::get('/pedido/confirmacion/{id}', [CarritoController::class, 'mostrarConfirmacion'])->name('pedido.confirmacion');
 
-Route::get('/pedido/detalles/{id_pedido}', [CarritoController::class, 'mostrarDetallesPedido'])
-    ->name('pedido.detalles');
+    Route::get('/pedido/detalles/{id_pedido}', [CarritoController::class, 'mostrarDetallesPedido'])
+        ->name('pedido.detalles');
 
-    Route::post('/carrito/actualizar/{id}', [CarritoController::class, 'actualizar'])->name('carrito.actualizar');
-    Route::delete('/carrito/eliminar/{id}', [CarritoController::class, 'eliminarItem'])->name('carrito.eliminar.item');
+        Route::post('/carrito/actualizar/{id}', [CarritoController::class, 'actualizar'])->name('carrito.actualizar');
+        Route::delete('/carrito/eliminar/{id}', [CarritoController::class, 'eliminarItem'])->name('carrito.eliminar.item');
 
-    //nuevas rutas de pago
-    Route::prefix('metodos-pago')->group(function() {
-    Route::get('/', [MetodosPagosController::class, 'index'])->name('metodos-pago.index');
-    Route::get('/crear', [MetodosPagosController::class, 'create'])->name('metodos-pago.create');
-    Route::post('/', [MetodosPagosController::class, 'store'])->name('metodos-pago.store');
-    Route::post('/{id}/predeterminado', [MetodosPagosController::class, 'setDefault'])->name('metodos-pago.set-default');
-    Route::delete('/{id}', [MetodosPagosController::class, 'destroy'])->name('metodos-pago.destroy');
-    Route::post('/procesar-pago', [CarritoController::class, 'procesarPago'])->middleware('auth')->name('procesar-pago');
+        
 
-    // reseñas creadas por el usuario
-    Route::post('/reseñas', [ResenasController::class, 'storeByUser'])->name('reseñas.storeByUser')->middleware('auth');
+        //nuevas rutas de pago
+        Route::prefix('metodos-pago')->group(function() {
+        Route::get('/', [MetodosPagosController::class, 'index'])->name('metodos-pago.index');
+        Route::get('/crear', [MetodosPagosController::class, 'create'])->name('metodos-pago.create');
+        Route::post('/', [MetodosPagosController::class, 'store'])->name('metodos-pago.store');
+        Route::post('/{id}/predeterminado', [MetodosPagosController::class, 'setDefault'])->name('metodos-pago.set-default');
+        Route::delete('/{id}', [MetodosPagosController::class, 'destroy'])->name('metodos-pago.destroy');
+        Route::post('/procesar-pago', [CarritoController::class, 'procesarPago'])->middleware('auth')->name('procesar-pago');
 
-});
+        // reseñas creadas por el usuario
+
+
+    });
 
 }); 
 
@@ -190,8 +194,7 @@ Route::get('/appromociones/asignar-automaticas', [AplicacionesPromocionesControl
         Route::post('/users/generate-fake', [UsersController::class, 'generateFakeUsers'])
         ->name('users.fake');
         
-        Route::get('/reseñas/create/{producto}', [ResenasController::class, 'createByUser'])
-            ->name('reseñas.createByUser');
+
     Route::group(['prefix' => 'admin'], function() {
     Route::get('/dashboard', [ReportePedidosController::class, 'adminPage'])->name('admin.dashboard');
  

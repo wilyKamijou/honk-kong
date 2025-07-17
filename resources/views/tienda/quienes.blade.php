@@ -26,9 +26,12 @@
         Nos esforzamos por ser más que un restaurante.
       </p>
       <ul>
-        <li>✅ Ingredientes frescos y de calidad</li>
-        <li>✅ Entrega en menos de 30 minutos</li>
-        <li>✅ Atención personalizada y amable</li>
+        <li>✅ Integrantes del proyecto</li>
+        <li>✅ Dennis Polonio Apaza Chavez</li>
+        <li>✅ Willian Torrico Jimenez</li>
+        <li>✅ Lizeth Muñoz Herbas</li>
+        <li>✅ Brian Pardo Vargas</li>
+        <li>✅ Gueider Angel Cespedes Muñoz</li>
       </ul>
     </div>
 

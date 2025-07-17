@@ -237,4 +237,24 @@ public function eliminarItem($id)
 
     return redirect()->back()->with('success', 'Producto eliminado del carrito');
 }
+
+public function misPedidos()
+{
+    if (!auth()->check()) {
+        return redirect()->route('login')->with('error', 'Debes iniciar sesión para ver tus pedidos.');
+    }
+
+    $pedidos = pedidos::with(['detalle_pedido.productos', 'metodos_pagos'])
+        ->where('user_id', auth()->id())
+        ->orderBy('fecha', 'desc')
+        ->get()
+        ->groupBy('id_pedido');
+
+    $categorias = categorias::all();
+
+    return view('carrito.mis-pedidos', [
+        'pedidos' => $pedidos,
+        'categorias' => $categorias
+    ]);
+}
 }
