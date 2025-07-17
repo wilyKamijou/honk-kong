@@ -21,4 +21,9 @@ class promociones extends Model
     {
         return $this->hasMany(aplicaciones_promociones::class, 'id_promocion');
     }
+
+    public function productos()
+    {
+        return $this->belongsToMany(productos::class, 'aplicaciones_promociones', 'id_promocion', 'id_producto');
+    }
 }

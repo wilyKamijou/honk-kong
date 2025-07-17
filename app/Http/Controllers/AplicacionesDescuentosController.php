@@ -64,22 +64,22 @@ public function asignarDescuentosAutomaticos()
     
     return redirect('/apdescuentos')->with('success', "Se asignaron $descuentosAsignados descuentos a pedidos");
 }
-    public function index()
-    {
-        $apdes=DB::table('aplicaciones_descuentos as apdes')
-            ->join('pedidos as p', 'apdes.id_pedido', '=', 'p.id_pedido')
-            ->join('descuentos as d', 'apdes.id_descuento', '=', 'd.id_descuento')
-            ->join('users as u', 'u.id', '=', 'p.user_id')
-            ->select(
-                'apdes.id_descuento',
-                'apdes.id_pedido',
-                'd.descripcion',
-                'd.porcentaje',
-                'u.name'
-            )->get();
-    
-        return view('apdescuento.index',compact('apdes'));
-    }
+public function index()
+{
+    $apdes = DB::table('aplicaciones_descuentos as apdes')
+        ->join('pedidos as p', 'apdes.id_pedido', '=', 'p.id_pedido')
+        ->join('descuentos as d', 'apdes.id_descuento', '=', 'd.id_descuento')
+        ->join('users as u', 'u.id', '=', 'p.user_id') // Cambiado a 'users'
+        ->select(
+            'apdes.id_descuento',
+            'apdes.id_pedido',
+            'd.descripcion',
+            'd.porcentaje',
+            'u.name'
+        )->get();
+
+    return view('apdescuento.index', compact('apdes'));
+}   
 
     /**
      * Show the form for creating a new resource.

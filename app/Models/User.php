@@ -79,4 +79,10 @@ class User extends Authenticatable
 {
     return $this->hasMany(metodos_pagos::class, 'user_id', 'id');
 }
+public function pedidos()
+{
+    return $this->hasMany(pedidos::class, 'user_id', 'id');
+
+}
+
 }

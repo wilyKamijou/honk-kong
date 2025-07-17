@@ -18,6 +18,15 @@ use App\Http\Controllers\DetallePedidosController;
 use App\Models\aplicaciones_descuentos;
 use App\Http\Controllers\ReportePedidosController;
 
+use App\Http\Controllers\ReporteInventarioController;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+Route::get('/test-pdf', function() {
+    $pdf = Pdf::loadHTML('<h1>¡DOMPDF funciona correctamente!</h1>');
+    return $pdf->stream('test.pdf');
+});
+
+
 
 
 //rutas publicas
@@ -204,11 +213,12 @@ Route::get('/appromociones/asignar-automaticas', [AplicacionesPromocionesControl
     Route::get('/reportes/temporadas', [ReportePedidosController::class, 'analisisTemporadas'])->name('reportes.temporadas');
     Route::get('/reportes/clv', [ReportePedidosController::class, 'customerLifetimeValue'])->name('reportes.clv');
 
-        Route::get('/reportes/ventas-fecha/export/pdf', [ReportePedidosController::class, 'exportarVentasFechaPdf'])
-        ->name('reportes.ventas-fecha.export.pdf');
+    Route::get('/reportes/panel', [ReporteInventarioController::class, 'panel'])->name('admin.panel');
     
-    Route::get('/reportes/ventas-fecha/export/excel', [ReportePedidosController::class, 'exportarVentasFechaExcel'])
-        ->name('reportes.ventas-fecha.export.excel');
+       Route::prefix('reportes')->group(function() {
+        Route::get('/', [ReporteInventarioController::class, 'newindex'])->name('admin.reportes'); // Vista principal
+        Route::get('/generar-pdf', [ReporteInventarioController::class, 'generarPDF'])->name('panel.reportes.pdf'); // Generar PDF
+    });
 });
         });
 

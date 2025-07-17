@@ -102,11 +102,11 @@
         </div>
 
         <div class="col-xxl-3 col-md-6">
-            <a href="{{ route('reportes.temporadas') }}" class="text-decoration-none">
+            <a href="{{ route('admin.panel') }}" class="text-decoration-none">
                 <div class="card shadow-lg h-100 hover-scale">
                     <div class="card-body text-center py-4">
                         <i class="fas fa-sun fa-4x mb-3 text-info"></i>
-                        <h3 class="h4 font-weight-bold">Análisis de Temporadas</h3>
+                        <h3 class="h4 font-weight-bold">Panel y Reportes</h3>
                         <p class="mb-0 text-muted">Patrones estacionales</p>
                     </div>
                 </div>
