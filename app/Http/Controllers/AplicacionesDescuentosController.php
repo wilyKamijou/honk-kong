@@ -69,7 +69,7 @@ public function index()
     $apdes = DB::table('aplicaciones_descuentos as apdes')
         ->join('pedidos as p', 'apdes.id_pedido', '=', 'p.id_pedido')
         ->join('descuentos as d', 'apdes.id_descuento', '=', 'd.id_descuento')
-        ->join('users as u', 'u.id', '=', 'p.user_id') // Cambiado a 'users'
+        ->join('users as u', 'p.user_id', '=', 'u.id') // Asegúrate que sea 'users' en minúsculas
         ->select(
             'apdes.id_descuento',
             'apdes.id_pedido',
@@ -79,23 +79,22 @@ public function index()
         )->get();
 
     return view('apdescuento.index', compact('apdes'));
-}   
-
+}
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        $pedidos=DB::table('pedidos as p')
-            ->join('Users as u', 'p.user_id', '=', 'u.id')
-            ->select(
-                'p.id_pedido',
-                'u.name'
-            )->get();
-        $descuentos=descuentos::all();
-        return view('apdescuento.create',compact('pedidos','descuentos'));
-    }
-
+public function create()
+{
+    $pedidos = DB::table('pedidos as p')
+        ->join('users as u', 'p.user_id', '=', 'u.id') // 'users' en minúsculas
+        ->select(
+            'p.id_pedido',
+            'u.name'
+        )->get();
+    
+    $descuentos = descuentos::all();
+    return view('apdescuento.create', compact('pedidos', 'descuentos'));
+}
     /**
      * Store a newly created resource in storage.
      */
