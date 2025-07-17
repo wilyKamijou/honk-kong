@@ -9,7 +9,7 @@ class Resena extends Model
 {
     use HasFactory;
     
-    protected $primaryKey = 'id_reseña';
+    protected $primaryKey = 'id_resena';
     protected $table = 'resenas';
     protected $fillable = ['comentario', 'calificacion', 'fecha', 'user_id', 'producto_id'];
 

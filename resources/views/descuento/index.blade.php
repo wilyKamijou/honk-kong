@@ -223,7 +223,7 @@ function confirmDelete(descuentoId) {
     // Configurar nuevo evento para el botón Confirmar
     confirmBtn.onclick = function() {
         const form = document.getElementById('deleteForm');
-        form.action = `/descuento/${descuentoId}/eliminar`;
+        form.action = `/descuentos/${descuentoId}/eliminar`;
         form.submit();
         modal.hide();
     };

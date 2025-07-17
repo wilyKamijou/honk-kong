@@ -83,16 +83,14 @@ public function create()
     /**
      * Display the specified resource.
      */
-    public function show(resenas $resenas)
-    {
-        //
-    }
+
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
     {
+     
         $users=user::all();
         $reseña=Resena::findorfail($id);
         return view('reseña.edit',compact('users','reseña'));
@@ -113,6 +111,7 @@ public function create()
      */
     public function destroy($id)
     {
+      
         $reseña=Resena::findorfail($id);
         $reseña->delete();
         return redirect('/reseñas');

@@ -6,12 +6,24 @@
     <link rel="stylesheet" href="ruta-a-tu-archivo.css">
 
     <h2 style= "font-size: 5rem; font-family:'Times New Roman', Times, serif" class="text-center">Editar Datos De La Reseña</h2>
-    <form action="/reseñas/{{$reseña->id_reseña}}/actualizar" method="POST">
+    <form action="/reseñas/{{$reseña->id_resena}}/actualizar" method="POST">
         @method('PUT')
         
         <!-- CSRF Token (Laravel) -->
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
+        
+         <!-- Tipo de producto -->
+         <div class="mb-3">
+            <label for="id_tipoE" class="form-label">Usuarios:</label>
+                <select id="id_tipoE" name="user_id" class="form-select" required>
+                    <option value="" disabled selected>Seleccione al usuario</option>
+                    @foreach ($users as $user)
+                       <option value={{$user->id}}> {{$user->name}} </option>
+                    @endforeach
+                <!-- Agrega más opciones según los tipos disponibles -->
+        </select>
+        
         <!-- comentario -->
         <div class="mb-3">
             <label for="nombrePr" class="form-label">Comentario:</label>
@@ -27,19 +39,8 @@
       <!-- fercha -->
         <div class="mb-3">
             <label for="ubicacionPr" class="form-label">Fecha:</label>
-            <input type="text" id="ubicacionPr" name="fecha" class="form-control" value={{$reseña->fecha}} requiered>
+            <input type="text" id="ubicacionPr" name="created_at" class="form-control" value={{$reseña->created_at}} requiered>
         </div>
-
-         <!-- Tipo de producto -->
-        <div class="mb-3">
-            <label for="id_tipoE" class="form-label">Usuarios:</label>
-                <select id="id_tipoE" name="user_id" class="form-select" required>
-                    <option value="" disabled selected>Seleccione al usuario</option>
-                    @foreach ($users as $user)
-                       <option value={{$user->id}}> {{$user->name}} </option>
-                    @endforeach
-                <!-- Agrega más opciones según los tipos disponibles -->
-        </select>
 
         <!-- Botones -->
         <div class="mb-3">

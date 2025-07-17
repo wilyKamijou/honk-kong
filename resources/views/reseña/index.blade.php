@@ -40,7 +40,7 @@
                             <tbody>
                                 @foreach($reseñas as $reseña)
                                 <tr>
-                                    <td class="fw-bold text-muted">#{{ $reseña->id_reseña }}</td>
+                                    <td class="fw-bold text-muted">#{{$reseña->id_resena}}</td>
                                     <td>
                                         <div class="text-truncate" style="max-width: 250px;" title="{{ $reseña->comentario }}">
                                             {{ $reseña->comentario }}
@@ -78,7 +78,7 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{{route('reseñas.edit', $reseña->id_reseña)}}" 
+                                            <a href="/reseñas/{{$reseña->id_resena}}/editar" 
                                                class="btn btn-outline-primary rounded-start"
                                                data-bs-toggle="tooltip"
                                                title="Editar reseña">
@@ -86,7 +86,7 @@
                                             </a>
                                             
                                             <button class="btn btn-outline-danger rounded-end"
-                                                    onclick="confirmDelete({{ $reseña->id_reseña }})"
+                                                    onclick="confirmDelete({{$reseña->id_resena}})"
                                                     data-bs-toggle="tooltip"
                                                     title="Eliminar reseña">
                                                 <i class="fas fa-trash"></i>

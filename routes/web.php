@@ -123,9 +123,9 @@ Route::middleware([
         route::get('/reseñas', [resenasController::class, 'index'])->name('resenas.index'); 
         route::get('/reseñas/crear', [resenasController::class, 'create'])->name('resenas.create');
         route::post('/reseñas/guardar',[resenasController::class, 'store'])->name('resenas.store');
-        route::get('/reseñas/{id}/editar',[resenasController::class, 'edit'])->name('reseñas.edit');
-        route::Put('/reseñas/{id}/actualizar', [resenasController::class, 'update'])->name('reseñas.update');
-        route::delete('/reseñas/{id}/eliminar', [resenasController::class, 'destroy'])->name('reseñas.destroy');
+        route::get('/reseñas/{id}/editar',[resenasController::class, 'edit'])->name('resenas.edit');
+        route::Put('/reseñas/{id}/actualizar', [resenasController::class, 'update'])->name('resenas.update');
+        route::delete('/reseñas/{id}/eliminar', [resenasController::class, 'destroy'])->name('resenas.destroy');
         //metodos de pago
         route::get('/pagos', [metodosPagosController::class, 'index'])->name('pagos.index'); 
         route::get('/pagos/crear', [metodosPagosController::class, 'create'])->name('pagos.create');
