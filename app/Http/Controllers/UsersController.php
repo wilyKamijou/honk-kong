@@ -4,12 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
 
 class UsersController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+        public function generateFakeUsers(Request $request)
+    {
+        // Validar cantidad de usuarios a generar
+        $validated = $request->validate([
+            'count' => 'required|integer|min:1|max:100'
+        ]);
+        
+        $faker = Faker::create();
+        
+        // Roles disponibles (puedes ajustar según necesites)
+        $roles = ['cliente', 'admin'];
+        
+        // Generar los usuarios
+        for ($i = 0; $i < $validated['count']; $i++) {
+            User::create([
+                'name' => $faker->name,
+                'email' => $faker->unique()->safeEmail,
+                'password' => Hash::make('password'), // Contraseña por defecto
+                'role' => 'usuario',
+                'email_verified_at' => now(), // Verificar email automáticamente
+            ]);
+        }
+        
+        return redirect()->back()
+            ->with('success', "Se generaron {$validated['count']} usuarios de prueba correctamente");
+    }
+
     public function index()
     {
         $users=user::all();

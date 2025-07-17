@@ -8,20 +8,16 @@
                 <h3 class="mb-0">
                     <i class="fas fa-users-cog text-primary me-2"></i>Administración de Usuarios
                 </h3>
-                <div style=" padding-top: 20px">
-                    @if (session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    <form action="{{ route('users.fake') }}" method="POST" style="margin-bottom: 20px;">
-                        @csrf
-                        <label for="cantidad">Cantidad:</label>
-                        <input type="number" name="cantidad" value="10" min="1" style="width: 60px;">
-                        <button type="submit" class="btn btn-primary">Generar usuarios falsos</button>
-                    </form>
-    
-                </div>
+<form action="{{ route('users.fake') }}" method="POST" style="margin-bottom: 20px;">
+    @csrf
+    <div class="input-group">
+        <input type="number" name="count" class="form-control" 
+               placeholder="Cantidad de usuarios" min="1" max="100" required>
+        <button type="submit" class="btn btn-primary">
+            Generar Usuarios de Prueba
+        </button>
+    </div>
+</form>
                 <div>
     
                     <a href="/home" class="btn btn-sm btn-outline-secondary me-2">
@@ -202,7 +198,7 @@
 </style>
 @endpush
 
-@push('js')
+@push('js')@push('js')
 <script>
     // Inicializar tooltips
     document.addEventListener('DOMContentLoaded', function() {
@@ -212,7 +208,7 @@
         });
     });
 
-    // Función para cambiar rol
+    // Función para cambiar rol (manteniendo la existente)
     function changeRole(userId, currentRole) {
         const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
         document.getElementById('modalTitle').textContent = 'Cambiar rol de usuario';
@@ -227,37 +223,56 @@
         modal.show();
     }
 
-    // Función para eliminar usuario
-
-function confirmDelete(userId) {
-    const modalElement = document.getElementById('confirmModal');
-    const modal = new bootstrap.Modal(modalElement);
-    
-    // Configurar el contenido del modal
-    document.getElementById('modalTitle').textContent = 'Eliminar usuario';
-    document.getElementById('modalBody').textContent = '¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.';
-    
-    // Limpiar eventos previos del botón Confirmar
-    const confirmBtn = document.getElementById('confirmAction');
-    confirmBtn.onclick = null;
-    
-    // Configurar nuevo evento para el botón Confirmar
-    confirmBtn.onclick = function() {
-        const form = document.getElementById('deleteForm');
-        form.action = `/user/${productId}/eliminar`;
-        form.submit();
-        modal.hide();
-    };
-    
-    // Configurar evento para el botón Cancelar
-    const cancelBtn = modalElement.querySelector('.btn-secondary');
-    cancelBtn.onclick = function() {
-        modal.hide();
-    };
-    
-    // Mostrar el modal
-    modal.show();
-}
+    // Función corregida para eliminar usuario
+    function confirmDelete(userId) {
+        const modalElement = document.getElementById('confirmModal');
+        const modal = new bootstrap.Modal(modalElement);
+        
+        // Configurar el contenido del modal
+        document.getElementById('modalTitle').textContent = 'Eliminar usuario';
+        document.getElementById('modalBody').textContent = '¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.';
+        
+        // Limpiar eventos previos
+        const confirmBtn = document.getElementById('confirmAction');
+        const cancelBtn = modalElement.querySelector('.btn-secondary');
+        
+        // Limpiar eventos anteriores
+        confirmBtn.onclick = null;
+        cancelBtn.onclick = null;
+        
+        // Configurar nuevo evento para Confirmar
+        confirmBtn.onclick = function() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/user/${userId}/eliminar`;
+            
+            // Añadir CSRF token y método DELETE
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+            
+            modal.hide();
+        };
+        
+        // Configurar evento para Cancelar
+        cancelBtn.onclick = function() {
+            modal.hide();
+        };
+        
+        // Mostrar el modal
+        modal.show();
+    }
 </script>
-
 @endpush

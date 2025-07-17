@@ -140,7 +140,6 @@
     }
 </style>
 @endpush
-
 @push('js')
 <script>
     // Inicializar tooltips
@@ -151,36 +150,51 @@
         });
     });
 
-    // Función para eliminar (corregida)
-   
-function confirmDelete(itemId, itemType) {
-    const modalElement = document.getElementById('confirmModal');
-    const modal = new bootstrap.Modal(modalElement);
-    
-    // Configurar el contenido del modal
-    document.getElementById('modalTitle').textContent = 'Eliminar categoría';
-    document.getElementById('modalBody').textContent = '¿Estás seguro de eliminar este categoria? Esta acción no se puede deshacer.';
-    
-    // Limpiar eventos previos del botón Confirmar
-    const confirmBtn = document.getElementById('confirmAction');
-    confirmBtn.onclick = null;
-    
-    // Configurar nuevo evento para el botón Confirmar
-    confirmBtn.onclick = function() {
-        const form = document.getElementById('deleteForm');
-        form.action = `/categoria/${productId}/eliminar`;
-        form.submit();
-        modal.hide();
-    };
-    
-    // Configurar evento para el botón Cancelar
-    const cancelBtn = modalElement.querySelector('.btn-secondary');
-    cancelBtn.onclick = function() {
-        modal.hide();
-    };
-    
-    // Mostrar el modal
-    modal.show();
-}
+    // Función para eliminar categoría (versión corregida)
+    function confirmDelete(itemId, itemType) {
+        const modalElement = document.getElementById('confirmModal');
+        const modal = new bootstrap.Modal(modalElement);
+        
+        // Configurar el contenido del modal según el tipo
+        document.getElementById('modalTitle').textContent = `Eliminar ${itemType}`;
+        document.getElementById('modalBody').textContent = `¿Estás seguro de eliminar este ${itemType}? Esta acción no se puede deshacer.`;
+        
+        // Limpiar eventos previos
+        const confirmBtn = document.getElementById('confirmAction');
+        const cancelBtn = modalElement.querySelector('.btn-secondary');
+        
+        confirmBtn.onclick = null;
+        cancelBtn.onclick = null;
+        
+        // Configurar nuevo evento para Confirmar
+        confirmBtn.onclick = function() {
+            const form = document.getElementById('deleteForm');
+            if (!form) {
+                console.error('Formulario de eliminación no encontrado');
+                return;
+            }
+            
+            // Configurar la acción según el tipo de elemento
+            form.action = `/${itemType}/${itemId}/eliminar`;
+            
+            // Verificar CSRF token
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
+            if (!token) {
+                console.error('CSRF token no encontrado');
+                return;
+            }
+            
+            form.submit();
+            modal.hide();
+        };
+        
+        // Configurar evento para Cancelar
+        cancelBtn.onclick = function() {
+            modal.hide();
+        };
+        
+        // Mostrar el modal
+        modal.show();
+    }
 </script>
 @endpush

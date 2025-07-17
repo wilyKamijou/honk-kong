@@ -179,25 +179,28 @@
 
     function confirmDelete(promocionId) {
         const modalElement = document.getElementById('confirmModal');
-        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        const modal = new bootstrap.Modal(modalElement);
         
         // Configurar el contenido del modal
         document.getElementById('modalTitle').textContent = 'Eliminar promoción';
         document.getElementById('modalBody').textContent = '¿Estás seguro de eliminar esta promoción? Esta acción no se puede deshacer.';
         
-        // Limpiar eventos previos del botón Confirmar
+        // Limpiar eventos previos de los botones
         const confirmBtn = document.getElementById('confirmAction');
+        const cancelBtn = modalElement.querySelector('.btn-secondary');
+        
         confirmBtn.onclick = null;
+        cancelBtn.onclick = null;
         
         // Configurar nuevo evento para el botón Confirmar
         confirmBtn.onclick = function() {
             const form = document.getElementById('deleteForm');
             form.action = `/promociones/${promocionId}/eliminar`;
             form.submit();
+            modal.hide();
         };
         
         // Configurar evento para el botón Cancelar
-        const cancelBtn = modalElement.querySelector('.btn-secondary');
         cancelBtn.onclick = function() {
             modal.hide();
         };
