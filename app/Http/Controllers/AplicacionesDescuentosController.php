@@ -130,7 +130,7 @@ public function create()
     {
         $apde=aplicaciones_descuentos::where('id_descuento', $id1)->where('id_pedido', $id2)->first();
         $pedidos=DB::table('pedidos as p')
-        ->join('Users as u', 'p.user_id', '=', 'u.id')
+        ->join('users as u', 'p.user_id', '=', 'u.id')
         ->select(
             'p.id_pedido',
             'u.name'
