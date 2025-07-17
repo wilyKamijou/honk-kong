@@ -84,17 +84,20 @@
                             <td>
                                 <div class="text-truncate" style="max-width: 250px;">{{ $pedido->direccion_envio }}</div>
                             </td>
-                            <td>
-                                @if($pedido->metodo_pago)
-                                <span class="badge bg-info-light text-info">
-                                    {{ ucfirst($pedido->metodo_pago->tipo) }}
-                                </span>
-                                @else
-                                <span class="badge bg-secondary-light text-secondary">
-                                    Sin método
-                                </span>
-                                @endif
-                            </td>
+<td>
+    @if($pedido->metodos_pagos)
+    <span class="badge bg-info-light text-info">
+        {{ ucfirst($pedido->metodos_pagos->tipo) }}
+        @if($pedido->metodos_pagos->alias)
+            ({{ $pedido->metodos_pagos->alias }})
+        @endif
+    </span>
+    @else
+    <span class="badge bg-secondary-light text-secondary">
+        Sin método
+    </span>
+    @endif
+</td>
                             <td class="text-end">
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a href="{{ route('pedidos.edit', $pedido->id_pedido) }}" 

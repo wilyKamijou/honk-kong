@@ -9,6 +9,12 @@
             @endisset
         </h1>
     </div>
+    
+    <x-slot name="head">
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    </x-slot>
 
     <x-slot name="header">
         <h2 class="font-semibold text-2xl text-white leading-tight">

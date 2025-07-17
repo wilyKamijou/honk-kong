@@ -25,6 +25,9 @@
             <div class="col-md-3 align-self-end">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
             </div>
+            <div class="row mb-4">
+
+</div>
         </div>
     </form>
     canvas

@@ -204,6 +204,11 @@ Route::get('/appromociones/asignar-automaticas', [AplicacionesPromocionesControl
     Route::get('/reportes/temporadas', [ReportePedidosController::class, 'analisisTemporadas'])->name('reportes.temporadas');
     Route::get('/reportes/clv', [ReportePedidosController::class, 'customerLifetimeValue'])->name('reportes.clv');
 
+        Route::get('/reportes/ventas-fecha/export/pdf', [ReportePedidosController::class, 'exportarVentasFechaPdf'])
+        ->name('reportes.ventas-fecha.export.pdf');
+    
+    Route::get('/reportes/ventas-fecha/export/excel', [ReportePedidosController::class, 'exportarVentasFechaExcel'])
+        ->name('reportes.ventas-fecha.export.excel');
 });
         });
 

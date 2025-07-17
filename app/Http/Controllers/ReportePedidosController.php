@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+
 class ReportePedidosController extends Controller
 {
 
@@ -300,19 +301,26 @@ private function getDateExpression($agrupacion, $column)
             return "DATE($column)";
     }
 }
-
 public function analisisTemporadas(Request $request)
 {
     $year = $request->input('year', date('Y'));
     $categoriaId = $request->input('categoria_id');
 
+    // Validación
+    $request->validate([
+        'year' => 'sometimes|numeric|min:2020|max:'.(date('Y')+1),
+        'categoria_id' => 'sometimes|exists:categorias,id_categoria'
+    ]);
+
+    // Consulta principal para el heatmap
     $datos = DB::table('pedidos')
-        ->selectRaw('
-            categorias.nombre as categoria,
-            MONTH(pedidos.fecha) as mes,
-            SUM(detalle_pedidos.cantidad) as unidades,
-            SUM(detalle_pedidos.cantidad * detalle_pedidos.precio) as venta_total
-        ')
+        ->select([
+            'categorias.id_categoria',
+            'categorias.nombre as categoria',
+            DB::raw('MONTH(pedidos.fecha) as mes'),
+            DB::raw('SUM(detalle_pedidos.cantidad) as unidades'),
+            DB::raw('SUM(detalle_pedidos.cantidad * detalle_pedidos.precio) as venta_total')
+        ])
         ->join('detalle_pedidos', 'pedidos.id_pedido', '=', 'detalle_pedidos.id_pedido')
         ->join('productos', 'detalle_pedidos.id_producto', '=', 'productos.id_producto')
         ->join('categorias', 'productos.id_categoria', '=', 'categorias.id_categoria')
@@ -320,25 +328,51 @@ public function analisisTemporadas(Request $request)
         ->when($categoriaId, function($query, $categoriaId) {
             return $query->where('categorias.id_categoria', $categoriaId);
         })
-        ->groupBy('categorias.nombre', 'mes')
+        ->groupBy('categorias.id_categoria', 'categorias.nombre', 'mes')
         ->orderBy('mes')
+        ->orderBy('categoria')
         ->get();
 
-    $categorias = categorias::all();
-    $heatmapData = $datos->groupBy('categoria');
+    // Procesamiento para heatmap
+    $heatmapData = [];
+    $meses = range(1, 12);
+    
+    foreach($datos as $item) {
+        $heatmapData[$item->categoria][$item->mes] = $item->venta_total;
+    }
+
+    // Consulta para productos estacionales (CORREGIDA)
+    $topProductos = DB::table('detalle_pedidos')
+        ->select([
+            'productos.nombre as producto_nombre', // Cambiado de 'producto' a 'producto_nombre'
+            'categorias.nombre as categoria_nombre', // Cambiado de 'categoria' a 'categoria_nombre'
+            DB::raw('MONTH(pedidos.fecha) as mes'),
+            DB::raw('SUM(detalle_pedidos.cantidad) as unidades_vendidas')
+        ])
+        ->join('pedidos', 'detalle_pedidos.id_pedido', '=', 'pedidos.id_pedido')
+        ->join('productos', 'detalle_pedidos.id_producto', '=', 'productos.id_producto')
+        ->join('categorias', 'productos.id_categoria', '=', 'categorias.id_categoria')
+        ->whereYear('pedidos.fecha', $year)
+        ->when($categoriaId, function($query, $categoriaId) {
+            return $query->where('categorias.id_categoria', $categoriaId);
+        })
+        ->groupBy('productos.nombre', 'categorias.nombre', 'mes')
+        ->orderBy('mes')
+        ->orderByDesc('unidades_vendidas')
+        ->get()
+        ->groupBy('mes');
+
+    $categorias = Categorias::orderBy('nombre')->get();
 
     return view('reportes.temporadas', [
         'heatmapData' => $heatmapData,
+        'topProductos' => $topProductos,
         'categorias' => $categorias,
         'year' => $year,
-        'categoriaId' => $categoriaId
+        'categoriaId' => $categoriaId,
+        'meses' => $meses
     ]);
 }
-
-
-
-
-
 public function customerLifetimeValue(Request $request)
 {
     $cohortes = User::selectRaw('
