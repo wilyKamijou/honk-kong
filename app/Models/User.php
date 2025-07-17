@@ -74,4 +74,9 @@ class User extends Authenticatable
         return $this->hasMany(resenas::class, 'user_id','id');
          return $this->hasMany(Resena::class);
     }
+
+    public function metodos_pagos()
+{
+    return $this->hasMany(metodos_pagos::class, 'user_id', 'id');
+}
 }

@@ -11,43 +11,51 @@ class MetodosPagosController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */public function index()
+     */
+public function index()
 {
-    $user = auth()->user(); // Más eficiente que User::find(auth()->id())
-    $metodos = metodos_pagos::where('user_id', auth()->id())->get();
-    $pedidos = pedidos::where('user_id', auth()->id())->get();
-
-    return view('pago.index', compact('user', 'metodos', 'pedidos'));
+    $metodos = metodos_pagos::with(['users', 'pedidos'])
+        ->orderBy('created_at', 'desc')
+        ->paginate(15);
+        
+    return view('pago.index', compact('metodos'));
 }
+
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        $tipos = ['tarjeta' => 'Tarjeta', 'qr' => 'QR', 'efectivo' => 'Efectivo', 'transferencia' => 'Transferencia'];
-        return view('pago.create', compact('tipos'));
-    }
+  public function create()
+{
+    $tipos = ['tarjeta' => 'Tarjeta', 'qr' => 'QR', 'efectivo' => 'Efectivo', 'transferencia' => 'Transferencia'];
+    $users = User::all();
+    $pedidos = pedidos::all();
+        
+    return view('pago.create', compact('tipos', 'users', 'pedidos'));
+}
     /**
      * Store a newly created resource in storage.
      */
 
     public function store(Request $request)
     {
-        $request->validate([
-            'tipo' => 'required|in:tarjeta,qr,efectivo,transferencia',
+        
+    $request->validate([
+        'tipo' => 'required|in:tarjeta,qr,efectivo,transferencia',
+        'user_id' => 'required|exists:users,id', // Validar que el usuario existe
             'alias' => 'nullable|string|max:50',
             'nombre_titular' => 'required_if:tipo,tarjeta',
             'numero_tarjeta' => 'required_if:tipo,tarjeta',
             'fecha_expiracion' => 'required_if:tipo,tarjeta',
             'codigo_qr' => 'required_if:tipo,qr'
         ]);
+    $data = [
+        'tipo' => $request->tipo,
+        'alias' => $request->alias,
+        'user_id' => $request->user_id, // Usar el ID del formulario
+        'es_predeterminado' => $request->has('es_predeterminado'),
+        'pedido_id' => $request->pedido_id // Si decides usar esta relación
+    ];
 
-        $data = [
-            'tipo' => $request->tipo,
-            'alias' => $request->alias,
-            'user_id' => auth()->id(),
-            'es_predeterminado' => $request->has('es_predeterminado')
-        ];
 
         if ($request->tipo === 'tarjeta') {
             $data['nombre_titular'] = $request->nombre_titular;
@@ -62,9 +70,7 @@ class MetodosPagosController extends Controller
         if ($data['es_predeterminado']) {
             MetodosPagos::where('user_id', auth()->id())->update(['es_predeterminado' => false]);
         }
-
-        metodos_pagos::create($data);
-
+metodos_pagos::create($data);
         return redirect()->route('metodos-pago.index')->with('success', 'Método de pago añadido');
     }
 

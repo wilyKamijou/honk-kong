@@ -24,10 +24,10 @@ class metodos_pagos extends Model
         'user_id'
     ];
 
-    public function pedidos()
-    {
-        return $this->hasMany(pedidos::class, 'id_pago');
-    }
+public function pedidos()
+{
+    return $this->belongsTo(pedidos::class, 'pedido_id', 'id_pedido');
+}
     public function users()
     {
         return $this->belongsTo(User::class, 'user_id');
